@@ -1,0 +1,40 @@
+{% extends 'index.html'%}
+{% block page-content %}
+{% load stu_tags %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    Panel content
+  </div>
+  <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <!-- Table -->
+      <table class="table">
+          <thead>
+            <tr>
+                <th>课程名称</th>
+                <th>班级</th>
+                <th>开课日期</th>
+                <th>结束日期</th>
+                <th>课程进度</th>
+                <th>我的成绩</th>
+                <th>作业管理</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for enroll_obj in request.user.stu_account.enrollment_set.all %}
+            <tr>
+                <td>{{enroll_obj.enrolled_class.course}}</td>
+                <td>s{{enroll_obj.enrolled_class.semester}}</td>
+                <td>{{enroll_obj.enrolled_class.start_date}}</td>
+                <td>{{enroll_obj.enrolled_class.end_date}}</td>
+                <td>已上{{enroll_obj.enrolled_class.courserecord_set.all.count}}节</td>
+                <td>{% get_score enroll_obj as sum_score%} {{sum_score.score__sum}}</td>
+                <td><a href="{% url 'mycourse' enroll_obj.id%}">作业管理</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock%}

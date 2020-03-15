@@ -1,0 +1,39 @@
+{% extends 'index.html'%}
+{% block page-content %}
+
+<div id="content">
+    <form class="form-horizontal col-lg-7" role="form" method="post">{%csrf_token%}
+        <span style="color: red">{{enroll_form.errors}}</span>
+
+        <div class="form-group form-group-lg">
+            <label class="col-sm-2 control-label">客户</label>
+            <div class="col-sm-10">
+                {{customer_obj.qq}}
+            </div>
+        </div>
+      {% for field in enroll_form %}
+          <div class="form-group form-group-lg">
+            <label class="col-sm-2 control-label">{{field.label}}</label>
+            <div class="col-sm-10">
+                {{field}}
+            </div>
+          </div>
+      {% endfor %}
+      <input type="submit" class="btn btn-info pull-right" value="下一步">
+    </form>
+    <div class="row">
+        <ul>
+            {% for k,v in msgs.items%}
+                <li>{{k}}:{{v}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock%}
+<!--{% block bottom-js%}-->
+    <!--<script>-->
+        <!--$(document).ready(function(){-->
+            <!--$("#content").load("/kind_admin/crm/customer/");-->
+       <!--})-->
+    <!--</script>-->
+<!--{% endblock %}-->

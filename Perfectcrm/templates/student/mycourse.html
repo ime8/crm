@@ -1,0 +1,39 @@
+{% extends 'index.html'%}
+{% block page-content %}
+{% load stu_tags %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    {{enroll_obj.enrolled_class.course}}
+  </div>
+  <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <!-- Table -->
+      <table class="table">
+          <thead>
+            <tr>
+                <th>课程节次</th>
+                <th>上课课程</th>
+                <th>是否有作业</th>
+                <th>作业标题</th>
+                <th>签到状态</th>
+                <th>成绩</th>
+                <th>作业详情</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for studyrecord in enroll_obj.studyrecord_set.all %}
+            <tr>
+                <td>{{studyrecord.course_record.day_num}}</td>
+                <td>{{studyrecord.course_record.date}}</td>
+                <td>{{studyrecord.course_record.has_homework}}</td>
+                <td>{{studyrecord.course_record.homework_title}}</td>
+                <td>{{studyrecord.get_attendance_display}}</td>
+                <td>{{studyrecord.score}}</td>
+                <td><a href="{% url 'my_homework' studyrecord.id %}">作业详情</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock%}

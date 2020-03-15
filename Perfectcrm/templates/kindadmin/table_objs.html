@@ -1,0 +1,179 @@
+{% extends 'kindadmin/table_index.html'%}
+{% load tags %}
+
+{% block container %}
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {% render_app_name admin_class%}
+            <a class="pull-right" href="{{request.path}}add/">Add</a>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <form class="" method="get">
+                {% for condtion in admin_class.list_filters%}
+                <div class="col-lg-2">
+                    <span>{{condtion}}</span>
+                    {% render_filter_ele condtion admin_class filter_condtions %}
+                </div>
+                {% endfor %}
+                <button type="SUBMIT" class="btn btn-success">检索</button>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <input type="search" name="_q" class="form-control" value="{{search_value}}" placeholder="search by {%for column in admin_class.search_fields %} {{column}} {% endfor %}" style="margin-left:15px">
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="SUBMIT" class="btn btn-success">search</button>
+                    </div>
+
+                </div>
+            </form>
+            <div class="row" style="margin-top: 5px;margin-left: 0">
+                <form onsubmit="return ActionSubmit(this)" method="post">{% csrf_token %}
+                    <div class="col-lg-2">
+                        <select class="form-control" id="action_list" name="action">
+                            <option value="" name="">----------</option>
+                            {% for action in admin_class.actions %}
+                                <option value="{{action}}" name="">{% get_action_verbose_name admin_class action%}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <div class="col-lg-1">
+                        <button type="submit" class="btn">Go</button>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 35px"><input id="ckbox" type="checkbox" onclick="CheckAllToggle(this)"></th>
+                    {% for column in admin_class.list_display %}
+
+                        {% build_reverse_order column order_key filter_condtions admin_class %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td>总共{{query_sets.paginator.count}}条</td>
+                </tr>
+            </tfoot>
+
+
+            <tbody>
+     {#           {% get_query_sets admin_class as query_sets %}#}
+                {% for obj in query_sets %}
+                <tr>
+                    <td><input type="checkbox" tag="obj_checkbox" onclick="CheckOneTaggle()" value="{{obj.id}}"></td>
+                    {% build_table_raw obj admin_class request %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+       <nav>
+              <ul class="pagination">
+                  {% if query_sets.has_previous %}
+                        <li class=""><a href="?page={{ query_sets.previous_page_number }}&o={{previous_orderkey}}&_q={{search_value}}">上页</a></li>
+                  {% endif %}
+{#                   <li class="active"><a>{{ query_sets.number }}</a></li>#}
+
+{#                  {% for loop_counter in query_sets.paginator.page_range %}#}
+ {#                       {% render_page_ele  loop_counter query_sets filter_condtions%}#}
+   {#               {% endfor %}#}
+
+
+                  {% build_paginator query_sets filter_condtions previous_orderkey search_value %}
+
+
+                  {% if query_sets.has_next %}
+                        <li class=""><a href="?page={{ query_sets.next_page_number }}&o={{previous_orderkey}}&_q={{search_value}}">下页</a></li>
+                  {% endif %}
+
+
+{#                <li class="disabled"><a href="#">&laquo;</a></li>#}
+ {#               <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>#}
+ {#               #}
+              </ul>
+       </nav>
+    </div>
+</div>
+<script>
+    function CheckAllToggle(ele) {
+        // console.log($(ele).prop("checked"))
+        // console.log($("input[tag='obj_checkbox']"))
+        // var wait_checked = $("input[tag='obj_checkbox']")
+        if ($(ele).prop("checked")){
+            $("input[tag='obj_checkbox']").prop('checked',true);
+        }else{
+            $("input[tag='obj_checkbox']").prop('checked',false);
+        }
+    }
+
+    function CheckOneTaggle() {
+        var wait_checked = $("input[tag='obj_checkbox']")
+        $(wait_checked).each(function () {
+            if(!($(this).prop("checked"))){
+                $("input[id='ckbox']").prop("checked",false);
+            }else{
+                if($(wait_checked).prop("checked")){
+                   $("input[id='ckbox']").prop("checked",true);
+                }
+            }
+        })
+        // var count = 0
+        // console.log(wait_checked)
+        // console.log($(ele).length)
+        // console.log($(ele).prop("checked"))
+        // if (!($(ele).prop("checked"))){
+        //     $("input[id='ckbox']").prop("checked",false)
+        // }else{
+        //     count+=1
+        //     if(count==wait_checked){
+        //         $("input[id='ckbox']").prop("checked",true)
+        //     }
+        // }
+    }
+
+    function ActionSubmit(form_ele) {
+        //selected_action
+        //单多选框
+        var selected_ids=[];
+        $("input[tag='obj_checkbox']:checked").each(function () {
+            selected_ids.push($(this).val());
+        })
+        var selected_action=$("#action_list").val();
+
+        if (selected_ids.length==0){
+            alert("No object got selected!");
+            return
+        }
+        //上面的action选择框select
+        if (!selected_action){
+            alert("No action got selected!");
+            return
+        }
+        //start submit
+        var selected_ids_ele = "<input  name='selected_ids' type='hidden' value='" + selected_ids.toString() + "' >"
+        $(form_ele).append(selected_ids_ele);
+        return true
+    }
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+

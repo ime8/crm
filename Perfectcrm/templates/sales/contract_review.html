@@ -1,0 +1,102 @@
+{% extends 'base.html'%}
+{% load crm_tags %}
+
+{% block body %}
+    <div class="container form-horizontal">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3>Panel title</h3>
+            </div>
+
+                <div class="panel-body">
+                    <span style="color: red">{{customer_form.errors}}</span>
+                    {%for field in customer_form%}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">{{field.label}}</label>
+                            <div class="col-sm-9">
+                                {{field}}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <hr/>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">所报课程</label>
+                        <div class="col-sm-8">
+                            {{enroll_obj.enrolled_class.course}}
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="col-sm-2 control-label">课程学费</label>
+                        <div class="col-sm-8">
+                            {{enroll_obj.enrolled_class.course.price}}
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <label class="col-sm-2 control-label">课程开始时间</label>
+                        <div class="col-sm-8">
+                            {{enroll_obj.enrolled_class.start_date}}
+                        </div>
+                     </div>
+                    <a class="btn btn-danger" href="{% url 'enrollment' enroll_obj.id %}">审核拒绝</a>
+                    <a class="btn btn-success pull-right" href="{% url 'payment' enroll_obj.id %}">审核成功</a>
+
+
+
+
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock%}
+{% block bottom-js %}
+<script>
+    
+    $(document).ready(function () {
+        Dropzone.options.filedropzone ={
+            url:"{{request.path}}",
+            paramName:"file",//The name that will be used to transfer the file
+            maxFilesize:1,//MB
+            addRemoveLinks:true,
+            maxFiles:5,
+            uploadMultiple:true,
+            accept:function (file,done) {
+                if(file.name == "justinbieber.jpg"){
+                    done("Naha,you don't.");
+                }else{done();}
+
+            }};
+        myDropzone.on("success",function (file,response) {
+            /*Maybe display some more file information on your page*/
+            console.log('filex upload done....',response);
+        })
+
+    });
+    
+    function RegisterFormCheck() {
+        if(myDropzone.files.length<2){
+            alert("必须至少上传2张图片!")
+            return false;
+        }
+        if($("form :checkbox").prop("checked")){
+            $("form").find("[disabled]").removeAttr("disabled");
+            return true;
+        }else{
+            alert("必须同意该协议");
+            return false;
+        }
+    }
+    Dropzone.autoDiscover = false;
+    myDropzone = new Dropzone("#filedropzone");
+    myDropzone.on("addedfile", function(file) {
+        /* Maybe display some more file information on your page */
+        console.log("-------",file)
+      });
+    console.log(myDropzone.files)
+
+</script>
+{% endblock %}

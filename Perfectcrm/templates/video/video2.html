@@ -1,0 +1,46 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+{% load video_tags %}
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>筛选条件</h1>
+    <div class="filtered">
+        <div>
+            {% three_tag_all arg_list "dr_id" %}
+            {% for direction in direction_list%}
+                {% direction_tag direction arg_list %}
+            {% endfor%}
+        </div>
+        <div>
+            {% three_tag_all arg_list "category_id" %}
+            {% for category in category_list%}
+                {% three_catagory_tag category arg_list %}
+            {% endfor %}
+        </div>
+
+        <div>
+            {% three_tag_all arg_list "level_id" %}
+            {% for level in level_list%}
+                {% three_level_tag level arg_list %}
+            {% endfor%}
+        </div>
+
+    </div>
+    <h1>查询内容</h1>
+    <div class="container">
+        {%for result in results%}
+        <div style="width: 100px;height: 260px;float: left">
+            <img src="{{result.img}}" style="width: 100px;height: 150px">
+            <p>{{result.title}}</p>
+            <p>{{result.summary}}</p>
+        </div>
+        {%endfor%}
+    </div>
+
+</body>
+</html>
